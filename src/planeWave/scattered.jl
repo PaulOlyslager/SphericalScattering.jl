@@ -137,7 +137,20 @@ function Δfieldₙ(sphere, excitation::PlaneWave, quantity::FarField, r, coeffs
     return SVector(eltype(ΔEϑ)(0.0), ΔEϑ, ΔEϕ)
 end
 
+function Δfieldₙ(sphere, excitation::PlaneWave, quantity::FarFieldMagnetic, r, coeffs, expansion, sinϕ, cosϕ, n)
 
+    (~, Nn_ϑ, Nn_ϕ, Mn_ϑ, Mn_ϕ) = expansion
+
+    k = wavenumber(excitation)
+    aₙ = coeffs[1]
+    bₙ = coeffs[2]
+
+ 
+    ΔHϑ = -im * im^n * (sinϕ / k) * (aₙ * Mn_ϑ + bₙ * Nn_ϑ)
+    ΔHϕ = -im * im^n * (cosϕ / k) * (aₙ * Mn_ϕ + bₙ * Nn_ϕ)
+
+    return SVector(eltype(ΔHϑ)(0.0), ΔHϑ, ΔHϕ)
+end
 
 """
     amplitude(sphere, excitation::PlaneWave, quantity::MagneticField, r)
@@ -183,7 +196,10 @@ function amplitude(sphere, excitation::PlaneWave, quantity::FarField, r)
     return excitation.amplitude
 end
 
-
+function amplitude(sphere, excitation::PlaneWave, quantity::FarFieldMagnetic, r)
+    η = impedance(sphere, excitation, r)
+    return 1 / η * excitation.amplitude
+end
 
 """
     scatterCoeff_of_layer(sphere, r, coeffs)
@@ -310,6 +326,9 @@ function expansion(sphere::Sphere, excitation::PlaneWave, quantity::Field, r, pl
     if quantity isa FarField
         B = T(1.0)
         dB = T(1.0)
+    elseif quantity isa FarFieldMagnetic
+        B = T(1.0)
+        dB = T(1.0)
     else
         k = wavenumber(sphere, excitation, r)
         kr = k * r
@@ -360,7 +379,7 @@ function expansion(sphere::Sphere, excitation::PlaneWave, quantity::Field, r, pl
         Nn_ϕ = -Nn_ϑ
     end
 
-    if !(quantity isa FarField)
+    if !(quantity isa FarField) && !(quantity isa FarFieldMagnetic)
         Nn_r = n * (n + 1) * B * p
         Nn_ϑ = im * Nn_ϑ
         Nn_ϕ = im * Nn_ϕ

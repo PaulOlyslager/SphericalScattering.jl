@@ -6,6 +6,10 @@ struct FarField <: Field
     locations#::Vector
 end
 
+struct FarFieldMagnetic <: Field
+    locations#::Vector
+end
+
 struct ElectricField <: Field
     locations#::Vector
 end

@@ -29,7 +29,7 @@ export Excitation
 export PlaneWave
 export UniformField
 export ElectricRingCurrent, MagneticRingCurrent
-export FarField, ElectricField, MagneticField
+export FarField, ElectricField, MagneticField, FarFieldMagnetic
 export DisplacementField
 export ScalarPotential, ScalarPotentialJump
 export Medium, Parameter
